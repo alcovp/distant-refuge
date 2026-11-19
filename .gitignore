@@ -1,0 +1,15 @@
+node_modules/
+var/
+backups/
+.env
+.env.*
+!.env.example
+*.sqlite*
+*.db
+*.db-*
+*.log
+*.pem
+*.key
+*.bak
+coverage/
+.DS_Store

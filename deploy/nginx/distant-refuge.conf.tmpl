@@ -1,0 +1,38 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{serverName}};
+    access_log off;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+    }
+
+    location / {
+        return 308 https://{{authority}}$request_uri;
+    }
+}
+
+server {
+    listen {{httpsPort}} ssl;
+    listen [::]:{{httpsPort}} ssl;
+    server_name {{serverName}};
+    access_log off;
+
+    ssl_certificate {{certificate}};
+    ssl_certificate_key {{certificateKey}};
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    client_max_body_size 96k;
+
+    location / {
+        proxy_pass http://{{upstream}};
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For "";
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
